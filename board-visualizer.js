@@ -1,4 +1,5 @@
-const Chess = require('./chess.js');
+const Chess = require('./chess');
+
 const { createCanvas, loadImage } = require('canvas');
 
 const BoardSize = 8;
@@ -13,6 +14,8 @@ const defaultConfig = {
     textFont: 'Arial',
     textOnLightTileColor: '#ffffff',
     textOnDarkTileColor: '#ffffff',
+    checkCircleColor: 'rgba(255, 0, 0, 0.5)',
+    checkCircleMargin: 8,
     piecesImageLocation: undefined,
     pieceTileSize: 64,
     pieceImageMapping: {
@@ -53,25 +56,23 @@ class ChessBoardVisualizer {
 
         for (let file = 1 ; file <= BoardSize ; file++) {
             for (let rank = BoardSize ; rank >= 1 ; rank--) {
-                const chessPosition = new Chess.ChessPosition(file, rank);
-                const isWhiteTile = (file % 2) ^ (rank % 2);
+                const square = new Chess.Pieces.Square(file, rank);
 
                 // Tile position in pixels
                 const tileStartX = (file - 1) * this.config.tileSize;
                 const tileStartY = (BoardSize - rank) * this.config.tileSize;
 
                 // Draw tile colors
-                if (board.highlightedSquares.filter(it => it.equals(chessPosition)).length > 0) {
-                    ctx.fillStyle = isWhiteTile ? this.config.lightTileColorHighlighted : this.config.darkTileColorHighlighted;
+                if (board.highlightedSquares.filter(it => it.equals(square)).length > 0) {
+                    ctx.fillStyle = square.isLight() ? this.config.lightTileColorHighlighted : this.config.darkTileColorHighlighted;
                 } else {
-                    ctx.fillStyle = isWhiteTile ? this.config.lightTileColor : this.config.darkTileColor;
+                    ctx.fillStyle = square.isLight() ? this.config.lightTileColor : this.config.darkTileColor;
                 }
-
 
                 ctx.fillRect(tileStartX, tileStartY, this.config.tileSize, this.config.tileSize);
 
                 ctx.font = this.config.textFontSize.toString() + "px " + this.config.textFont;
-                ctx.fillStyle = isWhiteTile ? this.config.textOnLightTileColor : this.config.textOnDarkTileColor;
+                ctx.fillStyle = square.isLight() ? this.config.textOnLightTileColor : this.config.textOnDarkTileColor;
 
                 if (file === 1) {
                     // Write rank number
@@ -84,16 +85,30 @@ class ChessBoardVisualizer {
                 if (rank === 1) {
                     // Write file letter
                     ctx.fillText(
-                        chessPosition.getFileLetter(),
-                        tileStartX + this.config.tileSize / 2 - this.config.textFontSize / 4,
+                        square.getFileLetter(),
+                        tileStartX + this.config.tileSize / 2 - ctx.measureText(square.getFileLetter()).width / 4,
                         tileStartY + this.config.tileSize - 1
                     );
                 }
 
-                // Draw piece
-                const piece = board.getPiece(chessPosition);
+                // Draw a piece
+                const piece = board.getPiece(square);
 
                 if (piece !== undefined) {
+                    if (piece.type === Chess.Pieces.Type.KING && board.isAttacked(piece.location, Chess.Pieces.Color.swap(piece.color))) {
+                        ctx.fillStyle = this.config.checkCircleColor;
+
+                        ctx.beginPath();
+                        ctx.arc(
+                            tileStartX + this.config.tileSize / 2,
+                            tileStartY + this.config.tileSize / 2,
+                            (this.config.tileSize - this.config.checkCircleMargin) / 2,
+                            0,
+                            Math.PI * 2
+                        );
+                        ctx.fill();
+                    }
+
                     const imageLocation = this.config.pieceImageMapping[piece.color.toUpperCase() + '_' + piece.type.toUpperCase()];
                     const tileCenterShift = Math.round((this.config.tileSize - this.config.pieceTileSize) / 2);
 

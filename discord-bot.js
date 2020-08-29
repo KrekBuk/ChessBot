@@ -1,5 +1,5 @@
 const Discord = require('discord.js');
-const Chess = require('./chess.js');
+const Chess = require('./chess');
 const ChessBoardVisualizer = require('./board-visualizer');
 
 class DiscordBot {
@@ -15,13 +15,11 @@ class DiscordBot {
      */
     visualizer;
 
-    board = new Chess.ChessBoard();
+    game = new Chess.Game.Game();
 
     constructor(token, channelId) {
         this.token = token;
         this.channelId = channelId;
-
-        this.board.setupDefaultBoard();
     }
 
     start() {
@@ -46,24 +44,58 @@ class DiscordBot {
             return false;
         }
 
-        const match = message.content.trim().toUpperCase().match(/\$([A-H][0-9])([A-H][0-9])/);
-        if (!match) {
-            return false;
+        const regex = /\$([A-H][0-9])([A-H][0-9])([QRBKN])?/;
+
+        let currentContent = message.content.toUpperCase();
+        let match;
+        let anyMatches = false;
+
+        if (currentContent.trim().toUpperCase() === "$RESET") {
+            anyMatches = true;
+            currentContent = "";
+
+            this.game.reset();
         }
 
-        if (!this.board.makeMoveIfValid(Chess.ChessPosition.fromString(match[1]), Chess.ChessPosition.fromString(match[2]))) {
-            message.channel.send("Invalid move");
-            return false;
+        if (currentContent.trim().toUpperCase() === "$UNDO") {
+            this.game.takebackMove();
+            anyMatches = true;
         }
 
-        this.sendBoard(this.visualizer.visualize(this.board));
+        if (currentContent.trim().toUpperCase() === "$BOARD") {
+            anyMatches = true;
+        }
+
+        while (match = currentContent.trim().match(regex)) {
+            currentContent = currentContent.replace(regex, "");
+
+            const result = this.game.makeMove(Chess.Pieces.Square.fromString(match[1]), Chess.Pieces.Square.fromString(match[2]), match[3]);
+
+            if (result !== Chess.Game.MoveResult.MOVE_OK) {
+                message.channel.send(result);
+                break;
+            }
+
+            anyMatches = true;
+        }
+
+        if (anyMatches) {
+            this.sendGameState(this.game);
+        }
     }
 
-    sendBoard(image) {
-        return this.channel.send("TEST", {
+    sendGameState(game) {
+        let text = "";
+        if (this.game.isConcluded()) {
+            text += "Game is concluded: \n";
+            text += "Result: " + this.game.result + "\n";
+            text += "Winner: " + (this.game.getWinnerColor() || "none");
+        }
+
+        return this.channel.send(text, {
             files: [
                 {
-                    attachment: image,
+                    attachment: this.visualizer.visualize(game.currentBoard),
                     name: "board.png"
                 }
             ]

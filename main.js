@@ -1,5 +1,4 @@
 const DiscordBot = require('./discord-bot');
-const Chess = require('./chess.js');
 const ChessBoardVisualizer = require('./board-visualizer.js');
 
 const fs = require('fs');
@@ -42,13 +41,5 @@ bot.visualizer.initialize()
     })
     .then(() => {
         console.log("Bot started")
-
-        const board = new Chess.ChessBoard();
-        board.setupDefaultBoard();
-
-        console.log(board.makeMoveIfValid(Chess.ChessPosition.fromString('E2'), Chess.ChessPosition.fromString('E4')))
-        console.log(board.makeMoveIfValid(Chess.ChessPosition.fromString('D7'), Chess.ChessPosition.fromString('D5')))
-
-        fs.writeFileSync("abc.png", bot.visualizer.visualize(board));
     });
 
