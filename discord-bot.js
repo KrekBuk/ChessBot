@@ -95,7 +95,7 @@ class DiscordBot {
         return this.channel.send(text, {
             files: [
                 {
-                    attachment: this.visualizer.visualize(game.currentBoard),
+                    attachment: this.visualizer.visualize(game.currentState.board),
                     name: "board.png"
                 }
             ]

@@ -5,7 +5,7 @@ const fs = require('fs');
 
 // Load config
 const configFileName = "config.json";
-if (!fs.existsSync(configFileName)) {
+if (! fs.existsSync(configFileName)) {
     fs.writeFileSync(configFileName, JSON.stringify({
         "token": "CHANGEME",
         "channel": "CHANGEME"

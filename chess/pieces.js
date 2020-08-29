@@ -117,7 +117,7 @@ class Square {
         for (; ;) {
             current = current.relative(fileRelative, rankRelative);
 
-            if (!current.isValid()) {
+            if (! current.isValid()) {
                 return squares;
             }
 
@@ -170,7 +170,7 @@ class Square {
      * @returns {boolean} whether this and the other square are equal.
      */
     equals(other) {
-        return !!other && this.fileNumber === other.fileNumber && this.rankNumber === other.rankNumber;
+        return !! other && this.fileNumber === other.fileNumber && this.rankNumber === other.rankNumber;
     }
 
     /**
@@ -214,7 +214,7 @@ class Square {
             string.charCodeAt(1) - '1'.charCodeAt(0) + 1,
         );
 
-        if (!square.isValid()) {
+        if (! square.isValid()) {
             return undefined;
         }
 
@@ -327,7 +327,7 @@ class Piece {
      * @returns {boolean} true if the move is valid, false if otherwise
      */
     isMoveValid(to, extra) {
-        if (!to.isValid()) {
+        if (! to.isValid()) {
             return false;
         }
 
@@ -375,7 +375,7 @@ class Piece {
      * @see Square
      */
     static instantiate(type, color, board, square) {
-        if (!this._pieceClasses[Type.PAWN]) {
+        if (! this._pieceClasses[Type.PAWN]) {
             // Lazy initialize
             Piece._pieceClasses[Type.PAWN] = Pawn;
             Piece._pieceClasses[Type.ROOK] = Rook;
@@ -410,7 +410,7 @@ class Pawn extends Piece {
 
         this.validMoves.push(this.location.relative(0, advanceDirection));
         this.validMoves.push(this.location.relative(1, advanceDirection));
-        this.validMoves.push(this.location.relative(-1, advanceDirection));
+        this.validMoves.push(this.location.relative(- 1, advanceDirection));
 
         if ((this.location.rankNumber === 2 && this.color === Color.WHITE) ||
             (this.location.rankNumber === 7 && this.color === Color.BLACK)) {
@@ -422,7 +422,7 @@ class Pawn extends Piece {
     }
 
     isMoveValid(to, extra) {
-        if (!super.isMoveValid(to, extra)) {
+        if (! super.isMoveValid(to, extra)) {
             return false;
         }
 
@@ -473,7 +473,7 @@ class Pawn extends Piece {
         if (to.rankNumber === 1 || to.rankNumber === 8) {
             // Promotion rank
 
-            if (!extra || extra.length !== 1 || "QRBKN".indexOf(extra) === -1) {
+            if (! extra || extra.length !== 1 || "QRBKN".indexOf(extra) === - 1) {
                 // no promotion arguments
                 return false;
             }
@@ -525,7 +525,7 @@ class Pawn extends Piece {
     }
 
     getAdvanceDirection() {
-        return this.color === Color.WHITE ? 1 : -1;
+        return this.color === Color.WHITE ? 1 : - 1;
     }
 }
 
@@ -547,14 +547,14 @@ class Rook extends Piece {
 
     recalculateValidMoves() {
         this.validMoves = []
-            .concat(this.location.getRelativesUntilInvalid(-1, 0))
+            .concat(this.location.getRelativesUntilInvalid(- 1, 0))
             .concat(this.location.getRelativesUntilInvalid(1, 0))
             .concat(this.location.getRelativesUntilInvalid(0, 1))
-            .concat(this.location.getRelativesUntilInvalid(0, -1));
+            .concat(this.location.getRelativesUntilInvalid(0, - 1));
     }
 
     isMoveValid(to, extra) {
-        if (!super.isMoveValid(to, extra)) {
+        if (! super.isMoveValid(to, extra)) {
             return false;
         }
 
@@ -593,13 +593,13 @@ class Knight extends Piece {
     recalculateValidMoves() {
         this.validMoves = [
             this.location.relative(1, 2),
-            this.location.relative(-1, 2),
-            this.location.relative(1, -2),
-            this.location.relative(-1, -2),
+            this.location.relative(- 1, 2),
+            this.location.relative(1, - 2),
+            this.location.relative(- 1, - 2),
             this.location.relative(2, 1),
-            this.location.relative(-2, 1),
-            this.location.relative(2, -1),
-            this.location.relative(-2, -1),
+            this.location.relative(- 2, 1),
+            this.location.relative(2, - 1),
+            this.location.relative(- 2, - 1),
         ];
 
         this.removeInvalidMoves();
@@ -628,14 +628,14 @@ class Bishop extends Piece {
 
     recalculateValidMoves() {
         this.validMoves = []
-            .concat(this.location.getRelativesUntilInvalid(-1, -1))
-            .concat(this.location.getRelativesUntilInvalid(-1, 1))
-            .concat(this.location.getRelativesUntilInvalid(1, -1))
+            .concat(this.location.getRelativesUntilInvalid(- 1, - 1))
+            .concat(this.location.getRelativesUntilInvalid(- 1, 1))
+            .concat(this.location.getRelativesUntilInvalid(1, - 1))
             .concat(this.location.getRelativesUntilInvalid(1, 1));
     }
 
     isMoveValid(to, extra) {
-        if (!super.isMoveValid(to, extra)) {
+        if (! super.isMoveValid(to, extra)) {
             return false;
         }
 
@@ -661,18 +661,18 @@ class Queen extends Piece {
 
     recalculateValidMoves() {
         this.validMoves = []
-            .concat(this.location.getRelativesUntilInvalid(-1, -1))
-            .concat(this.location.getRelativesUntilInvalid(-1, 1))
-            .concat(this.location.getRelativesUntilInvalid(1, -1))
+            .concat(this.location.getRelativesUntilInvalid(- 1, - 1))
+            .concat(this.location.getRelativesUntilInvalid(- 1, 1))
+            .concat(this.location.getRelativesUntilInvalid(1, - 1))
             .concat(this.location.getRelativesUntilInvalid(1, 1))
-            .concat(this.location.getRelativesUntilInvalid(-1, 0))
+            .concat(this.location.getRelativesUntilInvalid(- 1, 0))
             .concat(this.location.getRelativesUntilInvalid(1, 0))
             .concat(this.location.getRelativesUntilInvalid(0, 1))
-            .concat(this.location.getRelativesUntilInvalid(0, -1));
+            .concat(this.location.getRelativesUntilInvalid(0, - 1));
     }
 
     isMoveValid(to, extra) {
-        if (!super.isMoveValid(to, extra)) {
+        if (! super.isMoveValid(to, extra)) {
             return false;
         }
 
@@ -698,18 +698,18 @@ class King extends Piece {
 
     recalculateValidMoves() {
         this.validMoves = [
-            this.location.relative(-1, -1),
-            this.location.relative(-1, 1),
-            this.location.relative(1, -1),
+            this.location.relative(- 1, - 1),
+            this.location.relative(- 1, 1),
+            this.location.relative(1, - 1),
             this.location.relative(1, 1),
-            this.location.relative(-1, 0),
+            this.location.relative(- 1, 0),
             this.location.relative(1, 0),
             this.location.relative(0, 1),
-            this.location.relative(0, -1),
+            this.location.relative(0, - 1),
         ];
 
         if (this.board.castlingRights.long[this.color]) {
-            this.validMoves.push(this.location.relative(-2, 0));
+            this.validMoves.push(this.location.relative(- 2, 0));
         }
         if (this.board.castlingRights.short[this.color]) {
             this.validMoves.push(this.location.relative(2, 0));
@@ -719,7 +719,7 @@ class King extends Piece {
     }
 
     isMoveValid(to, extra) {
-        if (!super.isMoveValid(to, extra)) {
+        if (! super.isMoveValid(to, extra)) {
             return false;
         }
 
@@ -779,7 +779,7 @@ class King extends Piece {
             return false;
         }
 
-        if (!rook || rook.color !== this.color || rook.type !== Type.ROOK) {
+        if (! rook || rook.color !== this.color || rook.type !== Type.ROOK) {
             return false;
         }
 
@@ -797,7 +797,7 @@ class King extends Piece {
      * @returns {boolean} whether this king can castle short.
      */
     canCastleShort() {
-        if (!this.board.castlingRights.short[this.color]) {
+        if (! this.board.castlingRights.short[this.color]) {
             return false;
         }
 
@@ -815,7 +815,7 @@ class King extends Piece {
      * @returns {boolean} whether this king can castle long.
      */
     canCastleLong() {
-        if (!this.board.castlingRights.long[this.color]) {
+        if (! this.board.castlingRights.long[this.color]) {
             return false;
         }
 

@@ -56,7 +56,7 @@ class Board {
     _dirty = true;
 
     /**
-     * Cached board hash, valid only if the _dirty flag is set, otherwise must be recalculated.
+     * Cached board hash, valid only if the _dirty flag is not set, otherwise must be recalculated.
      * Do not access directly use calculateHash() method.
      *
      * @type {string}
@@ -100,7 +100,7 @@ class Board {
     _setupInitialPawns(color) {
         const rank = color === Pieces.Color.WHITE ? 2 : 7;
 
-        for (let file = 1; file <= 8; file++) {
+        for (let file = 1; file <= 8; file ++) {
             this.setPiece(Pieces.Piece.instantiate(Pieces.Type.PAWN, color, this, new Pieces.Square(file, rank)));
         }
     }
@@ -166,7 +166,7 @@ class Board {
      * @returns {boolean} true only if all the squares on the path are empty
      */
     isPathClear(path) {
-        return path.every(it => !this.getPiece(it));
+        return path.every(it => ! this.getPiece(it));
     }
 
     /**
@@ -188,11 +188,11 @@ class Board {
             for (let moveKey in piece.validMoves) {
                 const move = piece.validMoves[moveKey];
 
-                if (!move.equals(square)) {
+                if (! move.equals(square)) {
                     continue;
                 }
 
-                if (!piece.isMoveValid(move, "Q")) {
+                if (! piece.isMoveValid(move, "Q")) {
                     continue;
                 }
 
@@ -249,7 +249,7 @@ class Board {
                 const move = piece.validMoves[moveId];
                 const board = this.cloneBoard();
 
-                if (!board.makeMoveIfValid(piece.location, move, "Q")) {
+                if (! board.makeMoveIfValid(piece.location, move, "Q")) {
                     continue;
                 }
 
@@ -328,7 +328,7 @@ class Board {
 
         // clone pieces
         for (let location in this._pieces) {
-            if (!this._pieces[location]) {
+            if (! this._pieces[location]) {
                 continue;
             }
 
@@ -337,7 +337,7 @@ class Board {
 
         // other copies
         newBoard.highlightedSquares = Array.from(this.highlightedSquares);
-        newBoard.lastMove = !!this.lastMove
+        newBoard.lastMove = !! this.lastMove
             ? new Moves.Move(newBoard.getPiece(this.lastMove.piece.location), this.lastMove.from, this.lastMove.to, this.lastMove.capture, this.lastMove.extra)
             : undefined;
 
@@ -349,7 +349,7 @@ class Board {
      */
     recalculateAllPiecesMoves() {
         for (let location in this._pieces) {
-            if (!this._pieces[location]) {
+            if (! this._pieces[location]) {
                 continue;
             }
 
@@ -369,12 +369,12 @@ class Board {
     makeMoveIfValid(from, to, extra) {
         const piece = this.getPiece(from);
 
-        if (!piece) {
+        if (! piece) {
             // no piece there
             return false;
         }
 
-        if (!piece.isMoveValid(to, extra)) {
+        if (! piece.isMoveValid(to, extra)) {
             // move is invalid
             return false;
         }
@@ -417,17 +417,17 @@ class Board {
      * @returns {string} hash of the position
      */
     calculateHash() {
-        if (!this._dirty) {
+        if (! this._dirty) {
             return this._hash;
         }
 
         let hash = 7;
 
-        for (let rank = 1; rank <= 8; rank++) {
-            for (let file = 1; file <= 8; file++) {
+        for (let rank = 1; rank <= 8; rank ++) {
+            for (let file = 1; file <= 8; file ++) {
                 const piece = this._pieces[new Pieces.Square(rank, file).asString()];
 
-                if (!piece) {
+                if (! piece) {
                     continue;
                 }
 
@@ -491,7 +491,7 @@ class Board {
             const p1 = this._pieces[location];
             const p2 = other._pieces[location];
 
-            if (!p1) {
+            if (! p1) {
                 if (p2) {
                     return false;
                 }
@@ -499,7 +499,7 @@ class Board {
                 continue;
             }
 
-            if (!p2) {
+            if (! p2) {
                 return false;
             }
 
